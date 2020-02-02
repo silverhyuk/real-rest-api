@@ -102,8 +102,29 @@ class EventControllerTest {
         EventDto eventDto = EventDto.builder().build();
 
         this.mockMvc.perform(post("/api/events")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(this.objectMapper.writeValueAsString(eventDto)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.objectMapper.writeValueAsString(eventDto)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void createEvent_bad_request_wrong_input() throws Exception {
+        EventDto eventDto = EventDto.builder()
+                .name("Spring")
+                .description("Rest API Devrlopments with Spring")
+                .beginEnrollmentDateTime(LocalDateTime.of(2019, 01, 21, 00, 00))
+                .closeEnrollmentDateTime(LocalDateTime.of(2019, 01, 20, 23, 59))
+                .beginEventDateTime(LocalDateTime.of(2019, 01, 18, 14, 00))
+                .endEventDateTime(LocalDateTime.of(2019, 01, 15, 23, 59))
+                .basePrice(10000)
+                .maxPrice(200)
+                .limitOfEnrollment(100)
+                .build();
+
+        this.mockMvc.perform(post("/api/events")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.objectMapper.writeValueAsString(eventDto)))
+                .andDo(print())
                 .andExpect(status().isBadRequest());
     }
 }
