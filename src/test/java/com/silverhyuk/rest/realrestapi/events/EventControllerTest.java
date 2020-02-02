@@ -2,6 +2,7 @@ package com.silverhyuk.rest.realrestapi.events;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.silverhyuk.rest.realrestapi.common.TestDescription;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ class EventControllerTest {
     ObjectMapper objectMapper;
 
     @Test
+    @TestDescription("정상적으로 이벤트를 생성하는 테스트")
     public void createEvent() throws Exception{
         EventDto event = EventDto.builder()
                 .name("Spring")
@@ -68,6 +70,7 @@ class EventControllerTest {
      * @throws Exception
      */
     @Test
+    @TestDescription("입력 받을 수 없는 값을 사용한 경우에 에러가 발생하는 테스트")
     public void createEvent_bad_request() throws Exception{
         Event event = Event.builder()
                 .id(100)
@@ -98,6 +101,7 @@ class EventControllerTest {
     }
 
     @Test
+    @TestDescription("입력 값이 비어있는 경우에 에러가 발생하는 테스트")
     public void createEvent_bad_request_empty_input() throws Exception {
         EventDto eventDto = EventDto.builder().build();
 
@@ -108,6 +112,7 @@ class EventControllerTest {
     }
 
     @Test
+    @TestDescription("입력 값이 잘못된 경우에 에러가 발생하는 테스트")
     public void createEvent_bad_request_wrong_input() throws Exception {
         EventDto eventDto = EventDto.builder()
                 .name("Spring")
