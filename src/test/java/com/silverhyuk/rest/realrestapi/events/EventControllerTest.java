@@ -1,6 +1,7 @@
 package com.silverhyuk.rest.realrestapi.events;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -30,6 +31,7 @@ class EventControllerTest {
     @Test
     public void createEvent() throws Exception{
         Event event = Event.builder()
+                .id(100)
                 .name("Spring")
                 .description("Rest API Devrlopments with Spring")
                 .beginEnrollmentDateTime(LocalDateTime.of(2019, 01, 19, 00, 00))
@@ -40,6 +42,9 @@ class EventControllerTest {
                 .maxPrice(200)
                 .limitOfEnrollment(100)
                 .location("강남역 2번 출구")
+                .eventStatus(EventStatus.PUBLISHED)
+                .free(true)
+                .offline(false)
                 .build();
 
         mockMvc.perform(post("/api/events/")
@@ -51,6 +56,9 @@ class EventControllerTest {
                 .andExpect(jsonPath("id").exists())
                 .andExpect(header().exists(HttpHeaders.LOCATION))
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE))
+                .andExpect(jsonPath("id").value(Matchers.not(100)))
+                .andExpect(jsonPath("free").value(Matchers.not(true)))
+                .andExpect(jsonPath("eventStatus").value(EventStatus.DRAFT.name()))
         ;
 
     }
