@@ -3,6 +3,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id "org.asciidoctor.convert" version "1.5.9.2"
     id 'java'
+    id 'idea'
 }
 
 group = 'com.silverhyuk.rest'
@@ -21,10 +22,28 @@ configurations {
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 ext {
     set('snippetsDir', file("build/generated-snippets"))
+}
+
+test {
+    outputs.dir snippetsDir
+    useJUnitPlatform()
+}
+
+asciidoctor {
+    inputs.dir snippetsDir
+    dependsOn test
+}
+
+bootJar {
+    dependsOn asciidoctor
+    from ("${asciidoctor.outputDir}/html5"){
+        into 'static/docs'
+    }
 }
 
 dependencies {
@@ -43,16 +62,5 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
-    asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor'
-
-}
-
-test {
-    outputs.dir snippetsDir
-    useJUnitPlatform()
-}
-
-asciidoctor {
-    inputs.dir snippetsDir
-    dependsOn test
+    asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor:2.0.4.RELEASE'
 }
