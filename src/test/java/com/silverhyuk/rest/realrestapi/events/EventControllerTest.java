@@ -63,6 +63,7 @@ class EventControllerTest {
                 .andExpect(jsonPath("_links.self").exists())
                 .andExpect(jsonPath("_links.query-events").exists())
                 .andExpect(jsonPath("_links.update-event").exists())
+                .andExpect(jsonPath("location").value("강남역 2번 출구"))
         ;
 
     }
