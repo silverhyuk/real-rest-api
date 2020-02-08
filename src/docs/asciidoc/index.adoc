@@ -84,8 +84,6 @@ include::{snippets}/errors/http-response.adoc[]
 [[resources-index]]
 == 인덱스
 
-operation::resources-index[snippets='curl-request,http-request,http-response']
-
 인덱스는 서비스 진입점을 제공한다.
 
 
@@ -94,7 +92,7 @@ operation::resources-index[snippets='curl-request,http-request,http-response']
 
 `GET` 요청을 사용하여 인덱스에 접근할 수 있다.
 
-operation::index[snippets='response-body,http-response,links']
+operation::index[snippets='curl-request,http-request,request-body,http-response,response-body,links']
 
 [[resources-events]]
 == 이벤트
