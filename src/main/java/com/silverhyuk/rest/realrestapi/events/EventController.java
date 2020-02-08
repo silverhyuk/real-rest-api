@@ -1,5 +1,6 @@
 package com.silverhyuk.rest.realrestapi.events;
 
+import com.silverhyuk.rest.realrestapi.common.ErrorsResource;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.MediaTypes;
@@ -29,14 +30,12 @@ public class EventController {
     public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, Errors errors) {
 
         if(errors.hasErrors()) {
-            //return ResponseEntity.badRequest().build();
-            return ResponseEntity.badRequest().body(errors);
+            return badRequest(errors);
         }
 
         eventValidator.validate(eventDto, errors);
         if(errors.hasErrors()) {
-            //return ResponseEntity.badRequest().build();
-            return ResponseEntity.badRequest().body(errors);
+            return badRequest(errors);
         }
 
         Event event  = modelMapper.map(eventDto, Event.class);
@@ -50,5 +49,9 @@ public class EventController {
         eventResource.add(linkBuilder.withSelfRel());
         eventResource.add(linkBuilder.withRel("update-event"));
         return ResponseEntity.created(createdUri).body(eventResource);
+    }
+
+    private ResponseEntity badRequest(Errors errors) {
+        return ResponseEntity.badRequest().body(new ErrorsResource(errors));
     }
 }
