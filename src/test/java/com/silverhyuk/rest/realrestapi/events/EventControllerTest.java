@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -27,6 +28,8 @@ import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.li
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -240,13 +243,23 @@ class EventControllerTest {
         Event event = this.generateEvent(100);
 
         //when & then
-        this.mockMvc.perform(get("/api/events/{id}", event.getId()))
+        this.mockMvc.perform(RestDocumentationRequestBuilders.get("/api/events/{id}", event.getId())
+                            .accept(MediaTypes.HAL_JSON))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("name").exists())
                 .andExpect(jsonPath("id").exists())
                 .andExpect(jsonPath("_links.self").exists())
                 .andExpect(jsonPath("_links.profile").exists())
-                .andDo(document("get-event"))
+                .andDo(document("get-event",
+                        links(
+                            linkWithRel("self").description("link to self"),
+                            linkWithRel("profile").description("link to update an existing event")
+                        ),
+                        pathParameters(
+                                parameterWithName("id").description("이벤트 id")
+                        )
+                ))
         ;
     }
 
@@ -261,6 +274,14 @@ class EventControllerTest {
         Event event = Event.builder()
                 .name("event " + i)
                 .description("test event")
+                .beginEnrollmentDateTime(LocalDateTime.of(2019, 01, 19, 00, 00))
+                .closeEnrollmentDateTime(LocalDateTime.of(2019, 01, 20, 23, 59))
+                .beginEventDateTime(LocalDateTime.of(2019, 01, 19, 14, 00))
+                .endEventDateTime(LocalDateTime.of(2019, 01, 20, 23, 59))
+                .basePrice(100)
+                .maxPrice(200)
+                .limitOfEnrollment(100)
+                .location("강남역 2번 출구")
                 .build();
 
         Event save = this.eventRepository.save(event);
