@@ -1,6 +1,6 @@
 package com.silverhyuk.rest.realrestapi.events;
 
-import com.silverhyuk.rest.realrestapi.common.ErrorsResource;
+import com.silverhyuk.rest.realrestapi.common.ErrorsModel;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -14,13 +14,11 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -68,7 +66,21 @@ public class EventController {
         return ResponseEntity.ok(pagedModel);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity getEvent(@PathVariable Integer id) {
+        Optional<Event> optionalEvent = this.eventRepository.findById(id);
+        if(!optionalEvent.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Event event = optionalEvent.get();
+        EventModel eventModel = new EventModel(event);
+        eventModel.add(new Link("/docs/index.html#resources-events-get").withRel("profile"));
+        return ResponseEntity.ok(eventModel);
+    }
+
+
     private ResponseEntity badRequest(Errors errors) {
-        return ResponseEntity.badRequest().body(new ErrorsResource(errors));
+        return ResponseEntity.badRequest().body(new ErrorsModel(errors));
     }
 }
