@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Optional;
@@ -76,6 +77,32 @@ public class EventController {
         Event event = optionalEvent.get();
         EventModel eventModel = new EventModel(event);
         eventModel.add(new Link("/docs/index.html#resources-events-get").withRel("profile"));
+        return ResponseEntity.ok(eventModel);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity updateEvent(@PathVariable Integer id,
+                                      @RequestBody @Valid EventDto eventDto,
+                                      Errors errors) {
+        Optional<Event> optionalEvent = this.eventRepository.findById(id);
+        if(!optionalEvent.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+        if(errors.hasErrors()) {
+            return this.badRequest(errors);
+        }
+        this.eventValidator.validate(eventDto, errors);
+        if(errors.hasErrors()) {
+            return this.badRequest(errors);
+        }
+
+        Event existingEvent = optionalEvent.get();
+        this.modelMapper.map(eventDto, existingEvent);
+        Event savedEvent = this.eventRepository.save(existingEvent);
+
+        EventModel eventModel = new EventModel(savedEvent);
+        eventModel.add(new Link("/docs/index.html#resources-events-update").withRel("profile"));
+
         return ResponseEntity.ok(eventModel);
     }
 

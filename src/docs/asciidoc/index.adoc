@@ -1,4 +1,4 @@
-= Natural REST API Guide
+= REST API Guide
 최은혁;
 :doctype: book
 :icons: font
@@ -65,7 +65,7 @@
 
 에러 응답이 발생했을 때 (상태 코드 >= 400), 본문에 해당 문제를 기술한 JSON 객체가 담겨있다. 에러 객체는 다음의 구조를 따른다.
 
-include::{snippets}/errors/response-fields.adoc[]
+include::{snippets}/errors/http-request.adoc[]
 
 예를 들어, 잘못된 요청으로 이벤트를 만들려고 했을 때 다음과 같은 `400 Bad Request` 응답을 받는다.
 
@@ -125,4 +125,4 @@ operation::get-event[snippets='path-parameters,curl-request,http-response,links'
 
 `PUT` 요청을 사용해서 기존 이벤트를 수정할 수 있다.
 
-operation::update-event[snippets='request-fields,curl-request,http-response,links']
+operation::update-event[snippets='path-parameters,curl-request,http-response,links']
